@@ -1,12 +1,10 @@
 #include "Sub_StepCaloDis.h"
 
-static time_t prev_time;
-static long stopwatch_milliseconds = 0;
+bool irq = false;
 
 void StepCounter_Initialize()
 {
     //Receive objects for easy writing
-    tft = watch->tft;
     sensor = watch->bma;
     
     // Accel parameter structure
@@ -92,35 +90,35 @@ void Step_Distance_Count()
 
         // Check if it is a step interrupt
         if (sensor->isStepCounter()) {
-            // Get step data from register
-            StepCount = sensor->getCounter();
-            if (StepCount%10 == 0){distance = (StepCount/10)*SPACE_PER_10STEP;}
-
-              updateStepCount();
-              updateDistance();
-            
-//            tft->setTextFont(2);
-//            tft->setTextColor(TFT_WHITE, TFT_BLACK);
-//            tft->setCursor(20, 110);
-//            tft->print("StepCount: ");
-//            tft->print(StepCount);
-//    
-//            tft->setCursor(20, 130);
-//            tft->print("Distance: ");
-//            tft->print(distance);
-//            tft->print(" miles");
-//            
-//            Serial.println(step);
+            //Only count if in Hiking Section
+            if(current_data.Hiking_Active == true)
+            {
+                // Get step data from register and calculate distance based on step
+                current_data.Step = sensor->getCounter();
+                if (current_data.Step%10 == 0){current_data.Distance = (current_data.Step/10)*SPACE_PER_10STEP;}
+                
+                //Call function to update data to screen
+                updateStepCount();
+                updateDistance();
+            }
         }
     }
 }
 
-//void stopwatch_app_task( lv_task_t * task ) {
-//
-//    time_t now = time(0);
-//    double dif_seconds = difftime(now,prev_time);
-//    stopwatch_milliseconds += dif_seconds * 1000;
-//    prev_time = now;
-//
-//    stopwatch_app_main_update_stopwatchlabel();
-//}
+void HikingTime_Calories_Count(){
+
+  if(current_data.Hiking_Active == true)
+  {
+      time_t now = time(0);
+      double dif_seconds = difftime(now,prev_time);
+      current_data.Time_inSecond += dif_seconds;
+      prev_time = now;
+      
+      // Calculate Calories
+      current_data.Calories = current_data.Time_inSecond * KCAL_PER_SECOND;
+
+      //Call function to update data to screen
+      updateHikingTime();
+      updateCalories();
+  }
+}

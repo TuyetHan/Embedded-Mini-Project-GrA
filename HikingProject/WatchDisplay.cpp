@@ -1,13 +1,3 @@
-/*
-Copyright (c) 2019 lewis he
-This is just a demonstration. Most of the functions are not implemented.
-The main implementation is low-power standby.
-The off-screen standby (not deep sleep) current is about 4mA.
-Select standard motherboard and standard backplane for testing.
-Created by Lewis he on October 10, 2019.
-*/
-
-// Please select the model you want to use in config.h
 #include "config.h"
 #include "WatchDisplay.h"
 #include "Sub_StepCaloDis.h"
@@ -28,9 +18,7 @@ LV_IMG_DECLARE(WALLPAPER_3_IMG);
 LV_IMG_DECLARE(step);
 LV_IMG_DECLARE(menu);
 
-extern EventGroupHandle_t g_event_group;
-extern QueueHandle_t g_event_queue_handle;
-
+//---------------------- Define Local Variable-------------------------//
 static lv_style_t settingStyle;
 static lv_obj_t *mainBar = nullptr;
 static lv_obj_t *timeLabel = nullptr;
@@ -43,10 +31,8 @@ static lv_obj_t *Hiking_Time_Label;
 static lv_obj_t *Start_Stop_Button = nullptr;
 static lv_obj_t *SS_Button_Label;
 
-static void lv_battery_task(struct _lv_task_t *);
-static void updateTime();
-
-int Start_Hiking_Time[6];
+QueueHandle_t g_event_queue_handle = NULL;
+EventGroupHandle_t g_event_group = NULL;
 
 class StatusBar
 {
@@ -158,7 +144,10 @@ private:
 };
 
 StatusBar bar;
+//---------------------- End of Local Variable-------------------------//
 
+//-------------------- Sub Function for GUI Part-----------------------//
+// Define all functions used for update watch display
 static void updateTime()
 {
     time_t now;
@@ -182,12 +171,34 @@ void updateBatteryLevel()
 
 void updateStepCount()
 {
-    lv_label_set_text_fmt(StepCount_Label, "Step: %d", StepCount);
+    lv_label_set_text_fmt(StepCount_Label, "Step: %d", current_data.Step);
 }
 
 void updateDistance()
 {
-    lv_label_set_text_fmt(Distance_Label, "Distance: %.3f", distance);
+    lv_label_set_text_fmt(Distance_Label, "Distance: %.3f miles", current_data.Distance);
+}
+
+void updateCalories()
+{
+    lv_label_set_text_fmt(Calories_Label, "Calorise: %d kcal", current_data.Calories);
+}
+
+void updateHikingTime()
+{
+    //hour    
+    int hr = (current_data.Time_inSecond / ( 60 * 60)) % 24;
+
+    // minutes
+    int min = (current_data.Time_inSecond / (60)) % 60;
+
+    // seconds
+    int sec = (current_data.Time_inSecond ) % 60;
+
+    // milliseconds
+    //int mill = stopwatch_milliseconds % 1000;
+
+    lv_label_set_text_fmt(Hiking_Time_Label, "Total Hiking Time: %02d:%02d:%02d", hr, min, sec);
 }
 
 void updateBatteryIcon(lv_icon_battery_t icon)
@@ -209,28 +220,46 @@ static void lv_battery_task(struct _lv_task_t *data)
     updateBatteryLevel();
 }
 
+// Start Stop Hiking Section Button
 static void SS_button_event_handler(lv_obj_t *obj, lv_event_t event)
 {
-    if (event == LV_EVENT_VALUE_CHANGED) {
+    if (event == LV_EVENT_VALUE_CHANGED) 
+    {
         if (lv_btn_get_state(obj) == LV_BTN_STATE_RELEASED)
           {
-            //Change Button Label
+            //Change Button Label, change Global Variable
             lv_label_set_text(SS_Button_Label, "Stop");
+            current_data.Hiking_Active = true;
 
-            //Record Start Time
-//            Start_Hiking_Time[0] = now.day();
-//            Start_Hiking_Time[1] = now.month(); 
-//            Start_Hiking_Time[2] = now.year(); 
-//            Start_Hiking_Time[3] = now.hour(); 
-//            Start_Hiking_Time[4] = now.minute(); 
-//            Start_Hiking_Time[5] = now.second();             
+            //Reset step counter,time counter assign prev-time for stopwatch
+            prev_time = time(0);
+            sensor->resetStepCounter();
+
+            current_data.Time_inSecond = 0;
+            
+
+            //Update display for Step and Distance
+            updateStepCount();
+            updateDistance();
             
           }
         else
-          {lv_label_set_text(SS_Button_Label, "Start");}  
+          {
+            //Change Button Label, change Global Variable
+            lv_label_set_text(SS_Button_Label, "Start");
+            current_data.Hiking_Active = false;
+
+            //Save data to database
+
+            //Update step to bar
+            
+          }  
     } 
 }
+//-------------------- End of Sub Function Part-------------------------//
 
+//---------------------- Initialization Part----------------------------//
+// Set up all neccessary Button, Label, Bar for Watch Display
 void setupGui()
 {
     lv_style_init(&settingStyle);
@@ -291,23 +320,23 @@ void setupGui()
     //Step Label
     StepCount_Label = lv_label_create(mainBar, NULL);
     lv_obj_set_pos(StepCount_Label, 20, 80);
-    lv_label_set_text_fmt(StepCount_Label, "Step: %d", StepCount);
+    lv_label_set_text_fmt(StepCount_Label, "Step: %d", 0);
     
 
     //Distance Label
     Distance_Label = lv_label_create(mainBar, StepCount_Label);
     lv_obj_set_pos(Distance_Label, 20, 100);
-    lv_label_set_text_fmt(Distance_Label, "Distance: %.3f miles", distance);
+    lv_label_set_text_fmt(Distance_Label, "Distance: %.3f miles", 0);
     
     //Calories Label
     Calories_Label = lv_label_create(mainBar, StepCount_Label);
     lv_obj_set_pos(Calories_Label, 20, 120);
-    lv_label_set_text_fmt(Calories_Label, "Calorise: %d", 3);
+    lv_label_set_text_fmt(Calories_Label, "Calorise: %d kcal", 0);
 
     //Hiking Time Label
     Hiking_Time_Label = lv_label_create(mainBar, StepCount_Label);
     lv_obj_set_pos(Hiking_Time_Label, 20, 140);
-    lv_label_set_text_fmt(Hiking_Time_Label, "Total Hiking Time: 00:00");
+    lv_label_set_text_fmt(Hiking_Time_Label, "Total Hiking Time: 00:00:00");
     
     //Start Stop Button
     Start_Stop_Button = lv_btn_create(lv_scr_act(), NULL);
@@ -378,7 +407,11 @@ void GUI_Initialize()
     //Clear lvgl counter
     lv_disp_trig_activity(NULL);
 }
+//------------------ end of Initialization Part -----------------//
 
+
+//------------------ Main function of Gui Display ---------------//
+// Update all Label according to real Value
 void Main_GUI_Handler()
 {
     uint8_t data;
@@ -387,13 +420,17 @@ void Main_GUI_Handler()
     } else {
         watch->startLvglTick();
         watch->rtc->syncToSystem();
+
+        // Update Time, Battery Level, Icon        
         updateTime();
         updateBatteryLevel();
         updateBatteryIcon(LV_ICON_CALCULATION);
-        updateDistance();
-        updateStepCount();
+
+        // 
         lv_disp_trig_activity(NULL);
         watch->openBL();
         watch->bma->enableStepCountInterrupt();
     }
 }
+
+//------------------ End of Main Gui Display ---------------//
