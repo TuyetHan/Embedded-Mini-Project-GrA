@@ -171,7 +171,7 @@ void updateBatteryLevel()
 
 void updateStepCount()
 {
-    lv_label_set_text_fmt(StepCount_Label, "Step: %d", current_data.Step);
+    lv_label_set_text_fmt(StepCount_Label, "Steps: %d", current_data.Step);
 }
 
 void updateDistance()
@@ -181,7 +181,7 @@ void updateDistance()
 
 void updateCalories()
 {
-    lv_label_set_text_fmt(Calories_Label, "Calorise: %d kcal", current_data.Calories);
+    lv_label_set_text_fmt(Calories_Label, "Calories: %d kcal", current_data.Calories);
 }
 
 void updateHikingTime()
@@ -320,7 +320,7 @@ void setupGui()
     //Step Label
     StepCount_Label = lv_label_create(mainBar, NULL);
     lv_obj_set_pos(StepCount_Label, 20, 80);
-    lv_label_set_text_fmt(StepCount_Label, "Step: %d", 0);
+    lv_label_set_text_fmt(StepCount_Label, "Steps: %d", 0);
     
 
     //Distance Label
@@ -331,7 +331,7 @@ void setupGui()
     //Calories Label
     Calories_Label = lv_label_create(mainBar, StepCount_Label);
     lv_obj_set_pos(Calories_Label, 20, 120);
-    lv_label_set_text_fmt(Calories_Label, "Calorise: %d kcal", 0);
+    lv_label_set_text_fmt(Calories_Label, "Calories: %d kcal", 0);
 
     //Hiking Time Label
     Hiking_Time_Label = lv_label_create(mainBar, StepCount_Label);
