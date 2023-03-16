@@ -236,7 +236,9 @@ static void SS_button_event_handler(lv_obj_t *obj, lv_event_t event)
             sensor->resetStepCounter();
 
             current_data.Time_inSecond = 0;
-            
+
+            id+=1;
+            current_data.id = id;
 
             //Update display for Step and Distance
             updateStepCount();

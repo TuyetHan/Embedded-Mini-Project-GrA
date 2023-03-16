@@ -12,6 +12,7 @@
 // Global Variable
 time_t prev_time;
 Hiking_Data current_data;
+uint8_t id = 0;
 
 BMA *sensor;
 TTGOClass *watch;

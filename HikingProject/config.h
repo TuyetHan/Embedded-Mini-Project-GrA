@@ -13,14 +13,16 @@
 #define DEFAULT_SCREEN_TIMEOUT  30*1000
 
 struct Hiking_Data{
+  uint8_t   id;
   uint32_t  Step;
   float     Distance;
   long      Time_inSecond;
   uint8_t   Calories;
-  bool      Hiking_Active; 
+  bool      Hiking_Active;
 };
 extern Hiking_Data current_data;
 extern time_t prev_time;
+extern uint8_t id;
 
 extern BMA *sensor;
 extern TTGOClass *watch;
