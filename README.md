@@ -11,6 +11,9 @@ Follow this steps from a terminal inside WebUI directory:
 
 ```$ source vwebui/bin/activate```
 
+* Export the app name:
+
+```$ export FLASK_APP=webui.py```
 
 * To run app:
 
