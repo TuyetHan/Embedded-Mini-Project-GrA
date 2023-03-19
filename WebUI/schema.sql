@@ -5,6 +5,7 @@ CREATE TABLE sessions (
     id INTEGER PRIMARY KEY,
     distance REAL,
     steps INTEGER,
-    calories INTEGER,
-    session_time INTEGER
+    calories REAL,
+    session_time INTEGER,
+    saved TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

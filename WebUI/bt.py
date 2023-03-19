@@ -1,4 +1,5 @@
 import bluetooth
+import time
 
 # MAC address of the device
 MAC_ADDRESS = '08:3A:F2:69:A9:F6'
@@ -7,16 +8,32 @@ MAC_ADDRESS = '08:3A:F2:69:A9:F6'
 service_uuid = '00001101-0000-1000-8000-00805f9b34fb'
 
 class BTConnect:
-    connected = False
+    """This class manages the Bluetooth connection to the watch and
+       the retrieval of data from the watch once it is connected.
+
+       This class allows to:
+        - Connect to the watch via Bluetooth (connect)
+        - Retrieve and process data from the watch (receive_data)
+
+    Attributes:
+        N/A
+    """
 
     def connect(self):
+        connected = False
         # Connects with ESP32 device and the service indicated
         self.sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        self.sock.connect((MAC_ADDRESS, 1))
-        self.sock.settimeout(2)
-        connected = True
-        self.sock.send(service_uuid)
-        print("Connected to Watch!")
+        try:
+            self.sock.connect((MAC_ADDRESS, 1))
+            self.sock.settimeout(2)
+            connected = True
+            self.sock.send(service_uuid)
+            print("Connected to Watch!")
+        except bluetooth.btcommon.BluetoothError:
+            time.sleep(1)
+        except Exception as e:
+            print(e)
+            print("Hub: Error occured while trying to connect to the Watch.")
 
         return connected
 
@@ -24,8 +41,6 @@ class BTConnect:
     def receive_data(self):
         # Receives the data written in a string line
         data = self.sock.recv(1024)
-
-        print(data)
 
         data = data.decode()
 

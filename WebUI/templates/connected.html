@@ -1,31 +1,33 @@
 {% extends 'base.html' %}
 
         {% block content %}
-            <div class="row my-4">
+          <div class="row my-4">
             <h1>{{ header }}</h1>
           </div>
           
-          
+          <hr>
+
+          {% for row in data|batch(5) %}
           <div class="row">
-            {% for d in data %}
+            {% for d in row %}
             <div class="col">
               <div class="row overflow-auto">
-                <h4>Session {{ d['id'] }}</h4>
+                <h4>Session #{{ d['id'] }}</h4>
               </div>
               <div class="row">
-                            
                 <ul class="list-group list-group-flush">
                   <li class="list-group-item">You have made {{ d['steps'] }} steps</li>
                   <li class="list-group-item">Burned {{ d['calories'] }} calories</li>
                   <li class="list-group-item">Traveled {{ d['distance'] }} miles</li>
                   <li class="list-group-item">In {{ d['time'] }} seconds of session</li>
                 </ul>
-                
               </div>
             </div>
             {% endfor %}
           </div>
-          
+          <hr>
+          {% endfor %}
+
           
           
           

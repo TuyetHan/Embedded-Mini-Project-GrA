@@ -1,17 +1,38 @@
 from flask import Flask
 from flask import render_template
-from flask import jsonify
-from flask import Response
+from flask import request
 
+from forms import DataForm
 from bt import BTConnect
 from db import DBAccess
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'EMBEDDEDGA'
 database = DBAccess()
+user_data = {}
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    form = DataForm()
+    return render_template('index.html', user_data=user_data, form=form)
+
+@app.route('/process_data', methods=['POST'])
+def process_data():
+
+    form = DataForm()
+
+    if form.validate_on_submit():
+        user_data['weight'] = form.weight.data
+        user_data['MET'] = float(form.activity.data)
+    else:
+        form = DataForm()
+        msg = "Introduce valid data"
+
+        return render_template('index.html', user_data=user_data, form=DataForm(), form_msg=msg)
+
+    return render_template('index.html', user_data=user_data, form=form, form_msg='')
+
+
 
 @app.route('/connected')
 def connect():
@@ -21,11 +42,15 @@ def connect():
     if bt.connect():
         data = bt.receive_data()
 
-    database.save_session(data)
+        database.save_session(data, user_data)
 
-    retrieved_data = [data]
+        retrieved_data = [data]
 
-    return render_template('connected.html', data=retrieved_data, header="Your retrieved data:")
+        return render_template('connected.html', data=retrieved_data, header="Your retrieved data:")
+
+    conn_msg = "It was not possible to establish connection. Try again, maybe with your watch closer."
+    return render_template('index.html', user_data=user_data, form=DataForm(), form_msg='', conn_msg=conn_msg)
+
 
 @app.route('/last_session')
 def last_session():
