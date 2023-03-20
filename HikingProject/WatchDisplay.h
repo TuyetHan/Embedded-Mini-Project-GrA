@@ -41,4 +41,6 @@ void setupGui();
 void GUI_Initialize();
 void Main_GUI_Handler();
 
+extern void Reset_Hiking_Data();
+
 #endif /*__GUI_H */

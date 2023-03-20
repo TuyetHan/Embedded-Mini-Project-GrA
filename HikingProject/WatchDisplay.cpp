@@ -232,13 +232,7 @@ static void SS_button_event_handler(lv_obj_t *obj, lv_event_t event)
             current_data.Hiking_Active = true;
 
             //Reset step counter,time counter assign prev-time for stopwatch
-            prev_time = time(0);
-            sensor->resetStepCounter();
-
-            current_data.Time_inSecond = 0;
-
-            id+=1;
-            current_data.id = id;
+              Reset_Hiking_Data();         
 
             //Update display for Step and Distance
             updateStepCount();
@@ -250,8 +244,6 @@ static void SS_button_event_handler(lv_obj_t *obj, lv_event_t event)
             //Change Button Label, change Global Variable
             lv_label_set_text(SS_Button_Label, "Start");
             current_data.Hiking_Active = false;
-
-            //Save data to database
 
             //Update step to bar
             

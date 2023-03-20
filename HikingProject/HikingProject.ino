@@ -9,12 +9,11 @@
 #include <soc/rtc.h>
 #include "esp_sleep.h"
 
-// Global Variable
+// Global Variable for Hiking Related Activities 
 time_t prev_time;
-Hiking_Data current_data;
-uint8_t id = 0;
+Hiking_Data current_data = {0,0,0,0,0,0};
 
-BMA *sensor;
+// Create variable for Step Count Sensor and Watch  
 TTGOClass *watch;
 
 void setup()
@@ -24,7 +23,7 @@ void setup()
     // Get TTGOClass instance
     watch = TTGOClass::getWatch();
 
-    // Initialize the hardware, the BMA423 sensor has been initialized internally
+    // Initialize the hardware
     watch->begin();
 
     // Watch GUI initialization

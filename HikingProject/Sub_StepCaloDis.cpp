@@ -1,6 +1,7 @@
 #include "Sub_StepCaloDis.h"
 
 bool irq = false;
+BMA *sensor; 
 
 void StepCounter_Initialize()
 {
@@ -121,4 +122,14 @@ void HikingTime_Calories_Count(){
       updateHikingTime();
       updateCalories();
   }
+}
+
+void Reset_Hiking_Data(){
+      prev_time = time(0);
+      sensor->resetStepCounter();
+      
+      current_data.Time_inSecond = 0;
+      current_data.Distance = 0;
+      current_data.Step = 0;
+      current_data.id = time(0);
 }

@@ -7,5 +7,6 @@
 void StepCounter_Initialize();
 void Step_Distance_Count();
 void HikingTime_Calories_Count();
+void Reset_Hiking_Data();
 
 #endif
