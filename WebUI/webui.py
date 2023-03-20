@@ -16,6 +16,11 @@ def index():
     form = DataForm()
     return render_template('index.html', user_data=user_data, form=form)
 
+@app.route('/change_data')
+def change_data():
+    form = DataForm()
+    return render_template('index.html', user_data={}, form=form)
+
 @app.route('/process_data', methods=['POST'])
 def process_data():
 
@@ -61,8 +66,6 @@ def last_session():
 
     retrieved_data.append(database.row_to_dict(data))
 
-    print(retrieved_data)
-
     return render_template('connected.html', data=retrieved_data, header="Your last session statistics:")
 
 @app.route('/all_sessions')
@@ -74,8 +77,6 @@ def all_sessions():
 
     for row in data:
         retrieved_data.append(database.row_to_dict(row))
-
-    print(retrieved_data)
 
     return render_template('connected.html', data=retrieved_data, header="All your sessions:")
 
