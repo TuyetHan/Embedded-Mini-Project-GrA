@@ -21,7 +21,6 @@ struct Hiking_Data{
   bool      Hiking_Active;
 };
 extern Hiking_Data current_data;
-extern time_t prev_time;
 
 extern TTGOClass *watch;
 

@@ -89,6 +89,12 @@ public:
         refresh();
     }
 
+    void setStepCounter(uint32_t counter)
+    {
+        lv_label_set_text(_array[5].icon, String(counter).c_str());
+        lv_obj_align(_array[5].icon, _array[4].icon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+    }
+
     void updateLevel(int level)
     {
         lv_label_set_text(_array[0].icon, (String(level) + "%").c_str());
@@ -160,6 +166,11 @@ static void updateTime()
     lv_obj_align(timeLabel, NULL, LV_ALIGN_IN_TOP_MID, 0, 20);
     TTGOClass *watch = TTGOClass::getWatch();
     watch->rtc->syncToRtc();
+}
+
+void updateStepCounter(uint32_t counter)
+{
+    bar.setStepCounter(counter);
 }
 
 void updateBatteryLevel()
@@ -244,7 +255,7 @@ static void SS_button_event_handler(lv_obj_t *obj, lv_event_t event)
             //Change Button Label, change Global Variable
             lv_label_set_text(SS_Button_Label, "Start");
             current_data.Hiking_Active = false;
-
+            updateStepCounter(current_data.Step);
             //Update step to bar
             
           }  
@@ -320,7 +331,7 @@ void setupGui()
     //Distance Label
     Distance_Label = lv_label_create(mainBar, StepCount_Label);
     lv_obj_set_pos(Distance_Label, 20, 100);
-    lv_label_set_text_fmt(Distance_Label, "Distance: %.3f miles", 0);
+    lv_label_set_text_fmt(Distance_Label, "Distance: %.3f miles", 0.000);
     
     //Calories Label
     Calories_Label = lv_label_create(mainBar, StepCount_Label);

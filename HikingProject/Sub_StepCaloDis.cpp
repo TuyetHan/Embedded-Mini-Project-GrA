@@ -2,6 +2,7 @@
 
 bool irq = false;
 BMA *sensor; 
+time_t prev_time;
 
 void StepCounter_Initialize()
 {

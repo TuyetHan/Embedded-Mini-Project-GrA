@@ -10,7 +10,7 @@
 #include "esp_sleep.h"
 
 // Global Variable for Hiking Related Activities 
-time_t prev_time;
+//time_t prev_time;
 Hiking_Data current_data = {0,0,0,0,0,0};
 
 // Create variable for Step Count Sensor and Watch  
