@@ -36,7 +36,7 @@ void updateStepCount();
 void updateDistance();
 void updateHikingTime();
 void updateCalories();
-void updateStepCounter();
+void updatePreviousStepCount();
 
 void setupGui();
 void GUI_Initialize();

@@ -168,7 +168,7 @@ static void updateTime()
     watch->rtc->syncToRtc();
 }
 
-void updateStepCounter(uint32_t counter)
+void updatePreviousStepCount(uint32_t counter)
 {
     bar.setStepCounter(counter);
 }
@@ -255,8 +255,9 @@ static void SS_button_event_handler(lv_obj_t *obj, lv_event_t event)
             //Change Button Label, change Global Variable
             lv_label_set_text(SS_Button_Label, "Start");
             current_data.Hiking_Active = false;
-            updateStepCounter(current_data.Step);
+            
             //Update step to bar
+            updatePreviousStepCount(current_data.Step);
             
           }  
     } 
